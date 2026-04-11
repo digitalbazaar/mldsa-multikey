@@ -15,6 +15,7 @@ function vintToHex(data) {
 function main() {
   console.log('varint -> hex:');
   console.log(`0x1210 -> 0x${Buffer.from(vintToHex(0x1210)).toString('hex')}`);
+  console.log(`0x1317 -> 0x${Buffer.from(vintToHex(0x1317)).toString('hex')}`);
 }
 
 main();
