@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2026 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2023-2026 Digital Bazaar, Inc. All rights reserved.
  */
 import * as base58 from 'base58-universal';
 import {NIST_SECURITY_LEVEL_2} from '../lib/constants.js';

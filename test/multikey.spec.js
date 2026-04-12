@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2026 Digital Bazaar, Inc.
+ * Copyright (c) 2023-2026 Digital Bazaar, Inc.
  */
 
 import {multikeys} from './mock-data.js';
