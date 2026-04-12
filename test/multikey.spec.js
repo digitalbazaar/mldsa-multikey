@@ -26,7 +26,7 @@ describe('mldsa-multikey', function() {
       });
       describe('generate', function() {
         testGenerate({keyType, ...props});
-      });/*
+      });
       describe('export', () => {
         testExport({keyType});
       });/*
