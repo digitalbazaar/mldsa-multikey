@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2026 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2023-2026 Digital Bazaar, Inc. All rights reserved.
  */
 import * as base58 from 'base58-universal';
 import * as base64url from 'base64url-universal';
@@ -7,8 +7,7 @@ import {createHash} from 'node:crypto';
 import chai from 'chai';
 import * as MldsaMultikey from '../lib/index.js';
 import {stringToUint8Array} from './text-encoder.js';
-import {CryptoKey} from '../lib/crypto.js';
-import {webcrypto} from '../lib/crypto.js';
+import {CryptoKey, webcrypto} from '../lib/crypto.js';
 import {exportKeyPair} from '../lib/serialize.js';
 
 const {expect} = chai;

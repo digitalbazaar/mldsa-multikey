@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2026 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2023-2026 Digital Bazaar, Inc. All rights reserved.
  */
 import * as MldsaMultikey from '../lib/index.js';
 import chai from 'chai';
