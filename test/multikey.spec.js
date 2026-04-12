@@ -23,13 +23,13 @@ describe('mldsa-multikey', function() {
     describe(keyType, function() {
       describe('algorithm', function() {
         testAlgorithm({keyType, serializedKeyPair});
-      });/*
+      });
       describe('generate', function() {
-        testGenerate({curve: keyType, ...props});
-      });
+        testGenerate({keyType, ...props});
+      });/*
       describe('export', () => {
-        testExport({curve: keyType});
-      });
+        testExport({keyType});
+      });/*
       describe('sign and verify', function() {
         testSignVerify({id, serializedKeyPair, keyType});
       });
