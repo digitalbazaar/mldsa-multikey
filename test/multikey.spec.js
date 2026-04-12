@@ -29,7 +29,7 @@ describe('mldsa-multikey', function() {
       });
       describe('export', () => {
         testExport({keyType});
-      });/*
+      });
       describe('sign and verify', function() {
         testSignVerify({id, serializedKeyPair, keyType});
       });
@@ -37,11 +37,11 @@ describe('mldsa-multikey', function() {
         testFrom({keyType, id, serializedKeyPair});
       });
       describe('fromJwk/toJwk', () => {
-        testJWK({curve: keyType});
+        testJWK({keyType});
       });
       describe('fromRaw', () => {
-        testRaw({curve: keyType});
-      });*/
+        testRaw({keyType});
+      });
     });
   }
 });

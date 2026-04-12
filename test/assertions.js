@@ -1,18 +1,25 @@
 /*!
  * Copyright (c) 2026 Digital Bazaar, Inc. All rights reserved.
  */
+import * as base58 from 'base58-universal';
 import * as base64url from 'base64url-universal';
+import {createHash} from 'node:crypto';
 import chai from 'chai';
 import * as MldsaMultikey from '../lib/index.js';
 import {stringToUint8Array} from './text-encoder.js';
 import {CryptoKey} from '../lib/crypto.js';
 import {webcrypto} from '../lib/crypto.js';
 import {exportKeyPair} from '../lib/serialize.js';
-import {
-  MULTICODEC_MLDSA44_PUBLIC_KEY_HEADER
-} from '../lib/constants.js';
 
 const {expect} = chai;
+
+// maps keyType string to nistSecurityLevel integer
+function _getNistSecurityLevel(keyType) {
+  if(keyType === 'ML-DSA-44') {
+    return 2;
+  }
+  throw new TypeError(`Unsupported keyType "${keyType}".`);
+}
 
 export function testSignVerify({id, serializedKeyPair}) {
   let signer;
@@ -65,13 +72,14 @@ export function testAlgorithm({serializedKeyPair, keyType}) {
 }
 
 export function testGenerate({
-  nistSecurityLevel,
+  keyType,
   // public key: 2-byte header + 1312-byte key
   publicKeyByteLength = 1314,
   // secret key: 2-byte header + 2560-byte expanded key
   secretKeyByteLength = 2562
 }) {
   it('should generate a key pair', async function() {
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     let keyPair;
     let err;
     try {
@@ -105,10 +113,11 @@ export function testGenerate({
   });
 }
 
-export function testExport({nistSecurityLevel}) {
+export function testExport({keyType}) {
   it('should export id, type and key material', async () => {
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({
-      id: '4e0db4260c87cc200df3',
+      id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626',
       controller: 'did:example:1234',
       nistSecurityLevel
     });
@@ -126,24 +135,28 @@ export function testExport({nistSecurityLevel}) {
 
     expect(keyPairExported.controller).to.equal('did:example:1234');
     expect(keyPairExported.type).to.equal('Multikey');
-    expect(keyPairExported.id).to.equal('4e0db4260c87cc200df3');
+    expect(keyPairExported.id).to.equal(
+      'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626');
   });
 
   it('should only export public key if specified', async () => {
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({
-      id: '4e0db4260c87cc200df3',
+      id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626',
       nistSecurityLevel
     });
     const keyPairExported = await keyPair.export({publicKey: true});
 
     expect(keyPairExported).not.to.have.property('secretKeyMultibase');
     expect(keyPairExported).to.have.property('publicKeyMultibase');
-    expect(keyPairExported).to.have.property('id', '4e0db4260c87cc200df3');
+    expect(keyPairExported).to.have.property(
+      'id', 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626');
     expect(keyPairExported).to.have.property('type', 'Multikey');
   });
 
   it('should only export public key if no secret key available', async () => {
-    const algorithm = {name: 'ML-DSA-44', nistSecurityLevel: 2};
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
+    const algorithm = {name: 'ML-DSA-44', nistSecurityLevel};
     const rawKeyPair = await webcrypto.subtle.generateKey(
       algorithm, true, ['sign', 'verify']);
     // simulate a key pair with only a public key
@@ -162,6 +175,7 @@ export function testExport({nistSecurityLevel}) {
   });
 
   it('should export raw public key', async () => {
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({nistSecurityLevel});
     // decode multibase, strip 2-byte multicodec header to get raw key
     const expectedPublicKey = base64url.decode(
@@ -171,6 +185,7 @@ export function testExport({nistSecurityLevel}) {
   });
 
   it('should export raw secret key', async () => {
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({nistSecurityLevel});
     // decode multibase, strip 2-byte multicodec header to get raw key
     const expectedSecretKey = base64url.decode(
@@ -189,7 +204,7 @@ export function testFrom({serializedKeyPair, id}) {
   });
   it('should round-trip load exported keys', async () => {
     const keyPair = await MldsaMultikey.generate({
-      id: '4e0db4260c87cc200df3'
+      id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626'
     });
     const keyPairExported = await keyPair.export({
       publicKey: true, secretKey: true
@@ -202,7 +217,7 @@ export function testFrom({serializedKeyPair, id}) {
 
   it('should import with `@context` array', async () => {
     const keyPair = await MldsaMultikey.generate({
-      id: '4e0db4260c87cc200df3'
+      id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626'
     });
     const keyPairExported = await keyPair.export({
       publicKey: true, secretKey: true
@@ -217,7 +232,7 @@ export function testFrom({serializedKeyPair, id}) {
   });
   it('should load `publicKeyJwk`', async () => {
     const keyPair = await MldsaMultikey.generate({
-      id: '4e0db4260c87cc200df3'
+      id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626'
     });
     const jwk1 = await MldsaMultikey.toJwk({keyPair});
     expect(jwk1.priv).to.not.exist;
@@ -233,10 +248,11 @@ export function testFrom({serializedKeyPair, id}) {
   });
 }
 
-export function testJWK({nistSecurityLevel}) {
+export function testJWK({keyType}) {
   it('should round-trip secret JWKs', async () => {
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({
-      id: '4e0db4260c87cc200df3',
+      id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626',
       nistSecurityLevel
     });
     const jwk1 = await MldsaMultikey.toJwk({keyPair, secretKey: true});
@@ -249,8 +265,9 @@ export function testJWK({nistSecurityLevel}) {
   });
 
   it('should round-trip public JWKs', async () => {
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({
-      id: '4e0db4260c87cc200df3',
+      id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626',
       nistSecurityLevel
     });
     const jwk1 = await MldsaMultikey.toJwk({keyPair});
@@ -261,8 +278,9 @@ export function testJWK({nistSecurityLevel}) {
   });
 }
 
-export function testRaw({nistSecurityLevel}) {
+export function testRaw({keyType}) {
   it('should import raw public key', async () => {
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({nistSecurityLevel});
 
     // first export
@@ -282,6 +300,7 @@ export function testRaw({nistSecurityLevel}) {
   });
 
   it('should import raw secret key', async () => {
+    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({nistSecurityLevel});
 
     // first export
@@ -306,10 +325,15 @@ function _ensurePublicKeyEncoding({keyPair, publicKeyMultibase}) {
   // ML-DSA public keys use base64url multibase (u prefix)
   keyPair.publicKeyMultibase.startsWith('u').should.be.true;
   publicKeyMultibase.startsWith('u').should.be.true;
-  const decodedPubkey = base64url.decode(publicKeyMultibase.slice(1));
-  // verify ML-DSA-44 multicodec header [0x90, 0x24]
-  decodedPubkey[0].should.equal(MULTICODEC_MLDSA44_PUBLIC_KEY_HEADER[0]);
-  decodedPubkey[1].should.equal(MULTICODEC_MLDSA44_PUBLIC_KEY_HEADER[1]);
-  const encodedPubkey = 'u' + base64url.encode(decodedPubkey);
-  encodedPubkey.should.equal(keyPair.publicKeyMultibase);
+  // decode multibase, strip 2-byte multicodec header to get raw public key
+  const multikey = base64url.decode(publicKeyMultibase.slice(1));
+  const publicKeyBytes = multikey.subarray(2);
+  // independently compute the expected key ID: SHA-256 multihash, base58btc
+  const digest = createHash('sha256').update(publicKeyBytes).digest();
+  const multihash = new Uint8Array(2 + digest.length);
+  multihash[0] = 0x12; // SHA-256 multihash code
+  multihash[1] = 0x20; // 32-byte digest length
+  multihash.set(digest, 2);
+  const expectedKeyId = 'z' + base58.encode(multihash);
+  keyPair.id.should.equal(`${keyPair.controller}#${expectedKeyId}`);
 }
