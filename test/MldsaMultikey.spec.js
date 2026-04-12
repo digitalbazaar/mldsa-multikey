@@ -18,7 +18,7 @@ describe('MldsaMultikey', () => {
   });
 
   describe('algorithm', () => {
-    it('deriveSecret() should not be supported by default', async () => {
+    it('deriveSecret() should not be supported', async () => {
       const keyPair = await MldsaMultikey.generate({nistSecurityLevel: 2});
 
       let err;
@@ -29,18 +29,6 @@ describe('MldsaMultikey', () => {
       }
       should.exist(err);
       err.name.should.equal('NotSupportedError');
-    });
-
-    it.skip('deriveSecret() should produce a shared secret', async () => {
-      const keyPair1 = await MldsaMultikey.generate(
-        {nistSecurityLevel: 2, keyAgreement: true});
-      const keyPair2 = await MldsaMultikey.generate(
-        {nistSecurityLevel: 2, keyAgreement: true});
-
-      const secret1 = await keyPair1.deriveSecret({publicKey: keyPair2});
-      const secret2 = await keyPair2.deriveSecret({publicKey: keyPair1});
-
-      expect(secret1).to.deep.eql(secret2);
     });
   });
 
