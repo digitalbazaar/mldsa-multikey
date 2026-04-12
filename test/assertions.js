@@ -143,7 +143,7 @@ export function testExport({nistSecurityLevel}) {
   });
 
   it('should only export public key if no secret key available', async () => {
-    const algorithm = {name: 'MLDSA', nistSecurityLevel};
+    const algorithm = {name: 'ML-DSA-44', nistSecurityLevel: 2};
     const rawKeyPair = await webcrypto.subtle.generateKey(
       algorithm, true, ['sign', 'verify']);
     // simulate a key pair with only a public key
