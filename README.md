@@ -82,9 +82,9 @@ await keyPair.export({publicKey: true});
 // ->
 {
   type: 'Multikey',
-  id: 'did:example:1234#TBD',
+  id: 'did:example:1234#zQmartQdEuERvHcqLnjGTiNkCfAW7LqvLBEofCnETp6FtNp',
   controller: 'did:example:1234',
-  publicKeyMultibase: 'TBD'
+  publicKeyMultibase: 'ukCQbQWUQXUiqckKYr2NHC2E6QrYgnUSZkmu28lnISswW5fHA1E4JJYb...'
 }
 ```
 
@@ -98,10 +98,10 @@ await keyPair.export({publicKey: true, secretKey: true});
 // ->
 {
   type: 'Multikey',
-  id: 'did:example:1234#TBD',
+  id: 'did:example:1234#zQmartQdEuERvHcqLnjGTiNkCfAW7LqvLBEofCnETp6FtNp',
   controller: 'did:example:1234',
-  publicKeyMultibase: 'TBD',
-  secretKeyMultibase: 'TBD'
+  publicKeyMultibase: 'ukCQbQWUQXUiqckKYr2NHC2E6QrYgnUSZkmu28lnISswW5fHA1E4JJYb...',
+  secretKeyMultibase: 'ulyYbQWUQXUiqckKYr2NHC2E6QrYgnUSZkmu28lnISswW5W8sui0fd84f...'
 }
 ```
 
