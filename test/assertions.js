@@ -3,7 +3,7 @@
  */
 import * as base58 from 'base58-universal';
 import * as base64url from 'base64url-universal';
-import {createHash} from 'node:crypto';
+import {sha256} from '@noble/hashes/sha2.js';
 import chai from 'chai';
 import * as MldsaMultikey from '../lib/index.js';
 import {stringToUint8Array} from './text-encoder.js';
@@ -328,7 +328,7 @@ function _ensurePublicKeyEncoding({keyPair, publicKeyMultibase}) {
   const multikey = base64url.decode(publicKeyMultibase.slice(1));
   const publicKeyBytes = multikey.subarray(2);
   // independently compute the expected key ID: SHA-256 multihash, base58btc
-  const digest = createHash('sha256').update(publicKeyBytes).digest();
+  const digest = sha256(publicKeyBytes);
   const multihash = new Uint8Array(2 + digest.length);
   multihash[0] = 0x12; // SHA-256 multihash code
   multihash[1] = 0x20; // 32-byte digest length
