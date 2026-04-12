@@ -31,6 +31,18 @@ module.exports = function(config) {
       experiments: {
         topLevelAwait: true,
       },
+      resolve: {
+        // Respect the "browser" field in package.json so crypto-browser.js
+        // is used instead of crypto.js when bundling for the browser
+        mainFields: ['browser', 'module', 'main'],
+        conditionNames: ['browser', 'import', 'require'],
+        alias: {
+          // Redirect all relative imports of crypto.js to crypto-browser.js
+          // so node:crypto is never pulled into the browser bundle
+          [require('path').resolve(__dirname, 'lib/crypto.js')]:
+            require('path').resolve(__dirname, 'lib/crypto-browser.js'),
+        },
+      },
     },
 
     // test results reporter to use
