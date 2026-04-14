@@ -19,7 +19,7 @@ describe('MldsaMultikey', () => {
 
   describe('algorithm', () => {
     it('deriveSecret() should not be supported', async () => {
-      const keyPair = await MldsaMultikey.generate({nistSecurityLevel: 2});
+      const keyPair = await MldsaMultikey.generate({algorithm: 'ML-DSA-44'});
 
       let err;
       try {
