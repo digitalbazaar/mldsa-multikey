@@ -12,14 +12,6 @@ import {exportKeyPair} from '../lib/serialize.js';
 
 const {expect} = chai;
 
-// maps keyType string to nistSecurityLevel integer
-function _getNistSecurityLevel(keyType) {
-  if(keyType === 'ML-DSA-44') {
-    return 2;
-  }
-  throw new TypeError(`Unsupported keyType "${keyType}".`);
-}
-
 export function testSignVerify({id, serializedKeyPair}) {
   let signer;
   let verifier;
@@ -78,11 +70,10 @@ export function testGenerate({
   secretKeyByteLength = 2562
 }) {
   it('should generate a key pair', async function() {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     let keyPair;
     let err;
     try {
-      keyPair = await MldsaMultikey.generate({nistSecurityLevel});
+      keyPair = await MldsaMultikey.generate({algorithm: keyType});
     } catch(e) {
       err = e;
     }
@@ -114,11 +105,10 @@ export function testGenerate({
 
 export function testExport({keyType}) {
   it('should export id, type and key material', async () => {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({
       id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626',
       controller: 'did:example:1234',
-      nistSecurityLevel
+      algorithm: keyType
     });
     const keyPairExported = await keyPair.export({
       publicKey: true, secretKey: true
@@ -139,10 +129,9 @@ export function testExport({keyType}) {
   });
 
   it('should only export public key if specified', async () => {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({
       id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626',
-      nistSecurityLevel
+      algorithm: keyType
     });
     const keyPairExported = await keyPair.export({publicKey: true});
 
@@ -154,10 +143,8 @@ export function testExport({keyType}) {
   });
 
   it('should only export public key if no secret key available', async () => {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
-    const algorithm = {name: 'ML-DSA-44', nistSecurityLevel};
     const rawKeyPair = await webcrypto.subtle.generateKey(
-      algorithm, true, ['sign', 'verify']);
+      {name: keyType}, true, ['sign', 'verify']);
     // simulate a key pair with only a public key
     const keyPairNoSecret = {
       publicKey: rawKeyPair.publicKey
@@ -174,8 +161,7 @@ export function testExport({keyType}) {
   });
 
   it('should export raw public key', async () => {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
-    const keyPair = await MldsaMultikey.generate({nistSecurityLevel});
+    const keyPair = await MldsaMultikey.generate({algorithm: keyType});
     // decode multibase, strip 2-byte multicodec header to get raw key
     const expectedPublicKey = base64url.decode(
       keyPair.publicKeyMultibase.slice(1)).slice(2);
@@ -184,8 +170,7 @@ export function testExport({keyType}) {
   });
 
   it('should export raw secret key', async () => {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
-    const keyPair = await MldsaMultikey.generate({nistSecurityLevel});
+    const keyPair = await MldsaMultikey.generate({algorithm: keyType});
     // decode multibase, strip 2-byte multicodec header to get raw key
     const expectedSecretKey = base64url.decode(
       keyPair.secretKeyMultibase.slice(1)).slice(2);
@@ -249,10 +234,9 @@ export function testFrom({serializedKeyPair, id}) {
 
 export function testJWK({keyType}) {
   it('should round-trip secret JWKs', async () => {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({
       id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626',
-      nistSecurityLevel
+      algorithm: keyType
     });
     const jwk1 = await MldsaMultikey.toJwk({keyPair, secretKey: true});
     expect(jwk1.priv).to.exist;
@@ -264,10 +248,9 @@ export function testJWK({keyType}) {
   });
 
   it('should round-trip public JWKs', async () => {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
     const keyPair = await MldsaMultikey.generate({
       id: 'urn:uuid:f6164de4-e7e9-4f1e-8ce1-e8023a77f626',
-      nistSecurityLevel
+      algorithm: keyType
     });
     const jwk1 = await MldsaMultikey.toJwk({keyPair});
     expect(jwk1.priv).to.not.exist;
@@ -279,8 +262,7 @@ export function testJWK({keyType}) {
 
 export function testRaw({keyType}) {
   it('should import raw public key', async () => {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
-    const keyPair = await MldsaMultikey.generate({nistSecurityLevel});
+    const keyPair = await MldsaMultikey.generate({algorithm: keyType});
 
     // first export
     const expectedPublicKey = base64url.decode(
@@ -290,7 +272,7 @@ export function testRaw({keyType}) {
 
     // then import
     const imported = await MldsaMultikey.fromRaw(
-      {nistSecurityLevel, publicKey});
+      {algorithm: keyType, publicKey});
 
     // then re-export to confirm
     const {publicKey: publicKey2} = await imported.export(
@@ -299,8 +281,7 @@ export function testRaw({keyType}) {
   });
 
   it('should import raw secret key', async () => {
-    const nistSecurityLevel = _getNistSecurityLevel(keyType);
-    const keyPair = await MldsaMultikey.generate({nistSecurityLevel});
+    const keyPair = await MldsaMultikey.generate({algorithm: keyType});
 
     // first export
     const expectedSecretKey = base64url.decode(
@@ -311,7 +292,7 @@ export function testRaw({keyType}) {
 
     // then import
     const imported = await MldsaMultikey.fromRaw(
-      {nistSecurityLevel, secretKey, publicKey});
+      {algorithm: keyType, secretKey, publicKey});
 
     // then re-export to confirm
     const {secretKey: secretKey2} = await imported.export(
