@@ -7,7 +7,6 @@ import {sha256} from '@noble/hashes/sha2.js';
 import chai from 'chai';
 import * as MldsaMultikey from '../lib/index.js';
 import {stringToUint8Array} from './text-encoder.js';
-import {CryptoKey, webcrypto} from '../lib/crypto.js';
 import {exportKeyPair} from '../lib/serialize.js';
 
 const {expect} = chai;
@@ -81,9 +80,9 @@ export function testGenerate({
     expect(keyPair).to.have.property('publicKeyMultibase');
     expect(keyPair).to.have.property('secretKeyMultibase');
     expect(keyPair).to.have.property('publicKey');
-    expect(keyPair?.publicKey instanceof CryptoKey).to.be.true;
+    expect(keyPair?.publicKey).to.have.property('algorithm');
     expect(keyPair).to.have.property('secretKey');
-    expect(keyPair?.secretKey instanceof CryptoKey).to.be.true;
+    expect(keyPair?.secretKey).to.have.property('algorithm');
     expect(keyPair).to.have.property('export');
     expect(keyPair).to.have.property('signer');
     expect(keyPair).to.have.property('verifier');
@@ -143,11 +142,10 @@ export function testExport({keyType}) {
   });
 
   it('should only export public key if no secret key available', async () => {
-    const rawKeyPair = await webcrypto.subtle.generateKey(
-      {name: keyType}, true, ['sign', 'verify']);
+    const generated = await MldsaMultikey.generate({algorithm: keyType});
     // simulate a key pair with only a public key
     const keyPairNoSecret = {
-      publicKey: rawKeyPair.publicKey
+      publicKey: generated.publicKey
     };
 
     const keyPairExported = await exportKeyPair({
