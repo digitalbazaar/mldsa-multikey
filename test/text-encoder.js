@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2026 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2023-2026 Digital Bazaar, Inc.
  */
 // converts data from string to Uint8Array
 export function stringToUint8Array(data) {
