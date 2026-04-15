@@ -65,8 +65,8 @@ export function testGenerate({
   keyType,
   // public key: 2-byte header + 1312-byte key
   publicKeyByteLength = 1314,
-  // secret key: 2-byte header + 2560-byte expanded key
-  secretKeyByteLength = 2562
+  // secret key multibase: 2-byte header + 32-byte seed
+  secretKeyByteLength = 34
 }) {
   it('should generate a key pair', async function() {
     let keyPair;
@@ -169,11 +169,9 @@ export function testExport({keyType}) {
 
   it('should export raw secret key', async () => {
     const keyPair = await MldsaMultikey.generate({algorithm: keyType});
-    // decode multibase, strip 2-byte multicodec header to get raw key
-    const expectedSecretKey = base64url.decode(
-      keyPair.secretKeyMultibase.slice(1)).slice(2);
+    // raw export always returns the expanded secret key bytes (2560 bytes)
     const {secretKey} = await keyPair.export({secretKey: true, raw: true});
-    expect(expectedSecretKey).to.deep.equal(secretKey);
+    expect(secretKey.length).to.equal(2560);
   });
 }
 
@@ -281,21 +279,21 @@ export function testRaw({keyType}) {
   it('should import raw secret key', async () => {
     const keyPair = await MldsaMultikey.generate({algorithm: keyType});
 
-    // first export
-    const expectedSecretKey = base64url.decode(
-      keyPair.secretKeyMultibase.slice(1)).slice(2);
-    const {secretKey, publicKey} = await keyPair.export(
-      {secretKey: true, raw: true});
-    expect(expectedSecretKey).to.deep.equal(secretKey);
+    // get the seed from secretKeyMultibase (strip multibase + 2-byte header)
+    const seed = base64url.decode(keyPair.secretKeyMultibase.slice(1)).slice(2);
+    expect(seed.length).to.equal(32);
+    const {publicKey} = await keyPair.export({publicKey: true, raw: true});
 
-    // then import
+    // import using seed + raw public key
     const imported = await MldsaMultikey.fromRaw(
-      {algorithm: keyType, secretKey, publicKey});
+      {algorithm: keyType, secretKey: seed, publicKey});
 
-    // then re-export to confirm
+    // confirm the expanded secret key round-trips
+    const {secretKey: secretKey1} = await keyPair.export(
+      {secretKey: true, raw: true});
     const {secretKey: secretKey2} = await imported.export(
       {secretKey: true, raw: true});
-    expect(expectedSecretKey).to.deep.equal(secretKey2);
+    expect(secretKey1).to.deep.equal(secretKey2);
   });
 }
 
