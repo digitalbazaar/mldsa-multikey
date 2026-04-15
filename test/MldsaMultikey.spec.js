@@ -36,7 +36,7 @@ describe('MldsaMultikey', () => {
     it('should error if publicKeyMultibase property is missing', async () => {
       let error;
       try {
-        await MldsaMultikey.from({});
+        await MldsaMultikey.from({key: {}});
       } catch(e) {
         error = e;
       }
