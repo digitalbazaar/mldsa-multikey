@@ -15,10 +15,10 @@ export function testSignVerify({id, serializedKeyPair}) {
   let signer;
   let verifier;
   before(async function() {
-    const keyPair = await MldsaMultikey.from({
+    const keyPair = await MldsaMultikey.from({key: {
       id,
       ...serializedKeyPair
-    });
+    }});
     signer = keyPair.signer();
     verifier = keyPair.verifier();
   });
@@ -50,12 +50,12 @@ export function testSignVerify({id, serializedKeyPair}) {
 
 export function testAlgorithm({serializedKeyPair, keyType}) {
   it('signer() instance should export proper algorithm', async () => {
-    const keyPair = await MldsaMultikey.from(serializedKeyPair);
+    const keyPair = await MldsaMultikey.from({key: serializedKeyPair});
     const signer = keyPair.signer();
     signer.algorithm.should.equal(keyType);
   });
   it('verifier() instance should export proper algorithm', async () => {
-    const keyPair = await MldsaMultikey.from(serializedKeyPair);
+    const keyPair = await MldsaMultikey.from({key: serializedKeyPair});
     const verifier = keyPair.verifier();
     verifier.algorithm.should.equal(keyType);
   });
@@ -190,7 +190,7 @@ export function testExport({keyType}) {
 export function testFrom({serializedKeyPair, id}) {
   it('should auto-set key.id based on controller', async () => {
     const {publicKeyMultibase} = serializedKeyPair;
-    const keyPair = await MldsaMultikey.from(serializedKeyPair);
+    const keyPair = await MldsaMultikey.from({key: serializedKeyPair});
     _ensurePublicKeyEncoding({keyPair, publicKeyMultibase});
     expect(keyPair.id).to.equal(id);
   });
@@ -201,7 +201,7 @@ export function testFrom({serializedKeyPair, id}) {
     const keyPairExported = await keyPair.export({
       publicKey: true, secretKey: true
     });
-    const keyPairImported = await MldsaMultikey.from(keyPairExported);
+    const keyPairImported = await MldsaMultikey.from({key: keyPairExported});
 
     expect(await keyPairImported.export({publicKey: true, secretKey: true}))
       .to.eql(keyPairExported);
@@ -214,10 +214,10 @@ export function testFrom({serializedKeyPair, id}) {
     const keyPairExported = await keyPair.export({
       publicKey: true, secretKey: true
     });
-    const keyPairImported = await MldsaMultikey.from({
+    const keyPairImported = await MldsaMultikey.from({key: {
       ...keyPairExported,
       '@context': [{}, keyPairExported['@context']]
-    });
+    }});
 
     expect(await keyPairImported.export({publicKey: true, secretKey: true}))
       .to.eql(keyPairExported);
@@ -228,11 +228,12 @@ export function testFrom({serializedKeyPair, id}) {
     });
     const jwk1 = await MldsaMultikey.toJwk({keyPair});
     expect(jwk1.priv).to.not.exist;
-    const keyPairImported1 = await MldsaMultikey.from({publicKeyJwk: jwk1});
-    const keyPairImported2 = await MldsaMultikey.from({
+    const keyPairImported1 =
+      await MldsaMultikey.from({key: {publicKeyJwk: jwk1}});
+    const keyPairImported2 = await MldsaMultikey.from({key: {
       type: 'JsonWebKey',
       publicKeyJwk: jwk1
-    });
+    }});
     const jwk2 = await MldsaMultikey.toJwk({keyPair: keyPairImported1});
     const jwk3 = await MldsaMultikey.toJwk({keyPair: keyPairImported2});
     expect(jwk1).to.eql(jwk2);
