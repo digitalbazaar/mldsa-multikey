@@ -52,12 +52,12 @@ export function testAlgorithm({serializedKeyPair, keyType}) {
   it('signer() instance should export proper algorithm', async () => {
     const keyPair = await MldsaMultikey.from(serializedKeyPair);
     const signer = keyPair.signer();
-    signer.algorithm.name.should.equal(keyType);
+    signer.algorithm.should.equal(keyType);
   });
   it('verifier() instance should export proper algorithm', async () => {
     const keyPair = await MldsaMultikey.from(serializedKeyPair);
     const verifier = keyPair.verifier();
-    verifier.algorithm.name.should.equal(keyType);
+    verifier.algorithm.should.equal(keyType);
   });
 }
 
