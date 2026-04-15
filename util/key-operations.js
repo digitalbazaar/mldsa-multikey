@@ -2,24 +2,17 @@
  * Copyright (c) 2023-2026 Digital Bazaar, Inc. All rights reserved.
  */
 import * as base58 from 'base58-universal';
-import {NIST_SECURITY_LEVEL_2} from '../lib/constants.js';
+import {ALGORITHM} from '../lib/constants.js';
 import * as MldsaMultikey from '../lib/index.js';
 import {stringToUint8Array} from '../test/text-encoder.js';
 
-// generates ECDSA key pair
-async function generateKeyPair(options = {}) {
-  if(!options.nistSecurityLevel) {
-    options.nistSecurityLevel = NIST_SECURITY_LEVEL_2;
-  }
-  if(!options.controller) {
-    options.controller = 'did:example:1234';
-  }
-  return MldsaMultikey.generate(options);
-}
-
-// executes common key operations
-async function main() {
-  const keyPair = await generateKeyPair();
+// executes common key operations for a single algorithm
+async function runKeyOperations(algorithm) {
+  console.log(`\n=== ${algorithm} ===`);
+  const keyPair = await MldsaMultikey.generate({
+    algorithm,
+    controller: 'did:example:1234'
+  });
   console.log('raw key pair:', keyPair);
   const exportedKeyPair = await keyPair.export({
     publicKey: true,
@@ -35,6 +28,12 @@ async function main() {
   console.log('signature:', base58.encode(new Uint8Array(signature)));
   const result = await verifier.verify({data, signature});
   console.log('result:', result);
+}
+
+async function main() {
+  for(const algorithm of Object.values(ALGORITHM)) {
+    await runKeyOperations(algorithm);
+  }
 }
 
 main();

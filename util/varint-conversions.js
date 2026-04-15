@@ -11,11 +11,32 @@ function vintToHex(data) {
   return varint.encode(data);
 }
 
-// converts ECDSA key headers from varint to hex
+// helper to format a single entry
+function fmt(hex, label) {
+  const encoded = `0x${Buffer.from(vintToHex(hex)).toString('hex')}`;
+  // eslint-disable-next-line max-len
+  const paddedHex = hex.toString(16).toUpperCase().padStart(4, '0');
+  console.log(`0x${paddedHex} (${label}) -> ${encoded}`);
+}
+
+// converts ML-DSA key headers from varint to hex
 function main() {
   console.log('varint -> hex:');
-  console.log(`0x1210 -> 0x${Buffer.from(vintToHex(0x1210)).toString('hex')}`);
-  console.log(`0x1317 -> 0x${Buffer.from(vintToHex(0x1317)).toString('hex')}`);
+
+  console.log('-- public keys --');
+  fmt(0x1210, 'mldsa-44-pub');
+  fmt(0x1211, 'mldsa-65-pub');
+  fmt(0x1212, 'mldsa-87-pub');
+
+  console.log('-- private keys (expanded) --');
+  fmt(0x1317, 'mldsa-44-priv');
+  fmt(0x1318, 'mldsa-65-priv');
+  fmt(0x1319, 'mldsa-87-priv');
+
+  console.log('-- private key seeds --');
+  fmt(0x131a, 'mldsa-44-priv-seed');
+  fmt(0x131b, 'mldsa-65-priv-seed');
+  fmt(0x131c, 'mldsa-87-priv-seed');
 }
 
 main();
