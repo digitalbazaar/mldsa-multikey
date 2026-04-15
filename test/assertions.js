@@ -61,10 +61,17 @@ export function testAlgorithm({serializedKeyPair, keyType}) {
   });
 }
 
+// Default key byte lengths for ML-DSA-44; override via props for other variants
+const PUBLIC_KEY_BYTE_LENGTHS = {
+  'ML-DSA-44': 1314, // 2-byte header + 1312-byte key
+  'ML-DSA-65': 1954, // 2-byte header + 1952-byte key
+  'ML-DSA-87': 2594, // 2-byte header + 2592-byte key
+};
+
 export function testGenerate({
   keyType,
-  // public key: 2-byte header + 1312-byte key
-  publicKeyByteLength = 1314,
+  // public key: 2-byte header + key
+  publicKeyByteLength = PUBLIC_KEY_BYTE_LENGTHS[keyType] ?? 1314,
   // secret key multibase: 2-byte header + 32-byte seed
   secretKeyByteLength = 34
 }) {
@@ -169,9 +176,14 @@ export function testExport({keyType}) {
 
   it('should export raw secret key', async () => {
     const keyPair = await MldsaMultikey.generate({algorithm: keyType});
-    // raw export always returns the expanded secret key bytes (2560 bytes)
+    // raw export always returns the expanded secret key bytes
+    const EXPANDED_SECRET_KEY_LENGTHS = {
+      'ML-DSA-44': 2560,
+      'ML-DSA-65': 4032,
+      'ML-DSA-87': 4896,
+    };
     const {secretKey} = await keyPair.export({secretKey: true, raw: true});
-    expect(secretKey.length).to.equal(2560);
+    expect(secretKey.length).to.equal(EXPANDED_SECRET_KEY_LENGTHS[keyType]);
   });
 }
 
