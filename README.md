@@ -40,6 +40,8 @@ browsers. Updates may remove support for older unmaintained platform versions.
 Please use dependency version lock files and testing to ensure compatibility
 with this software.
 
+To install from NPM:
+
 ```sh
 npm install @digitalbazaar/mldsa-multikey
 ```
