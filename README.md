@@ -35,11 +35,18 @@ your system will largely depend on your design decisions.
 
 ## Install
 
-- Node.js 22+ is required.
+This software requires and supports maintained recent versions of Node.js and
+browsers. Updates may remove support for older unmaintained platform versions.
+Please use dependency version lock files and testing to ensure compatibility
+with this software.
+
+```sh
+npm install @digitalbazaar/mldsa-multikey
+```
 
 To install locally (for development):
 
-```
+```sh
 git clone https://github.com/digitalbazaar/mldsa-multikey.git
 cd mldsa-multikey
 npm install
