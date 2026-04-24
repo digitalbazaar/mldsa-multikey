@@ -14,6 +14,7 @@
     "lib/**/*.js"
   ],
   "dependencies": {
+    "@noble/hashes": "^2.2.0",
     "@noble/post-quantum": "^0.6.1",
     "base58-universal": "^2.0.0",
     "base64url-universal": "^2.0.0"
