@@ -1,5 +1,5 @@
-/*!
- * Copyright (c) 2023 Digital Bazaar, Inc.
+/*
+ * Copyright (c) 2023-2026 Digital Bazaar, Inc.
  */
 module.exports = function(config) {
 
