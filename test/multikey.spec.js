@@ -2,7 +2,6 @@
  * Copyright (c) 2023-2026 Digital Bazaar, Inc.
  */
 
-import {multikeys} from './mock-data.js';
 import {
   testAlgorithm,
   testExport,
@@ -12,6 +11,7 @@ import {
   testRaw,
   testSignVerify
 } from './assertions.js';
+import {multikeys} from './mock-data.js';
 
 describe('mldsa-multikey', function() {
   for(const [keyType, options] of multikeys) {

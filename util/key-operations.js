@@ -2,8 +2,8 @@
  * Copyright (c) 2023-2026 Digital Bazaar, Inc.
  */
 import * as base58 from 'base58-universal';
-import {ALGORITHM} from '../lib/constants.js';
 import * as MldsaMultikey from '../lib/index.js';
+import {ALGORITHM} from '../lib/constants.js';
 import {stringToUint8Array} from '../test/text-encoder.js';
 
 // executes common key operations for a single algorithm
