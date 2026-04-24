@@ -14,7 +14,6 @@ function vintToHex(data) {
 // helper to format a single entry
 function fmt(hex, label) {
   const encoded = `0x${Buffer.from(vintToHex(hex)).toString('hex')}`;
-  // eslint-disable-next-line max-len
   const paddedHex = hex.toString(16).toUpperCase().padStart(4, '0');
   console.log(`0x${paddedHex} (${label}) -> ${encoded}`);
 }

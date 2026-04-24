@@ -3,11 +3,11 @@
  */
 import * as base58 from 'base58-universal';
 import * as base64url from 'base64url-universal';
-import {sha256} from '@noble/hashes/sha2.js';
-import chai from 'chai';
 import * as MldsaMultikey from '../lib/index.js';
-import {stringToUint8Array} from './text-encoder.js';
+import chai from 'chai';
 import {exportKeyPair} from '../lib/serialize.js';
+import {sha256} from '@noble/hashes/sha2.js';
+import {stringToUint8Array} from './text-encoder.js';
 
 const {expect} = chai;
 
@@ -65,7 +65,7 @@ export function testAlgorithm({serializedKeyPair, keyType}) {
 const PUBLIC_KEY_BYTE_LENGTHS = {
   'ML-DSA-44': 1314, // 2-byte header + 1312-byte key
   'ML-DSA-65': 1954, // 2-byte header + 1952-byte key
-  'ML-DSA-87': 2594, // 2-byte header + 2592-byte key
+  'ML-DSA-87': 2594 // 2-byte header + 2592-byte key
 };
 
 export function testGenerate({
@@ -180,7 +180,7 @@ export function testExport({keyType}) {
     const EXPANDED_SECRET_KEY_LENGTHS = {
       'ML-DSA-44': 2560,
       'ML-DSA-65': 4032,
-      'ML-DSA-87': 4896,
+      'ML-DSA-87': 4896
     };
     const {secretKey} = await keyPair.export({secretKey: true, raw: true});
     expect(secretKey.length).to.equal(EXPANDED_SECRET_KEY_LENGTHS[keyType]);
