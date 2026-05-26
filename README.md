@@ -38,6 +38,8 @@ with this software.
 
 To install from NPM:
 
+https://www.npmjs.com/package/@digitalbazaar/mldsa-multikey
+
 ```sh
 npm install @digitalbazaar/mldsa-multikey
 ```
