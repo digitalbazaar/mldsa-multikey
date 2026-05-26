@@ -1,6 +1,6 @@
 {
   "name": "@digitalbazaar/mldsa-multikey",
-  "version": "0.0.1-0",
+  "version": "1.0.0",
   "description": "Javascript library for generating and working with MldsaMultikey key pairs.",
   "homepage": "https://github.com/digitalbazaar/mldsa-multikey",
   "repository": {
