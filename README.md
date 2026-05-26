@@ -1,9 +1,5 @@
 # ML-DSA Multikey Library _(@digitalbazaar/mldsa-multikey)_
 
-[![Build status](https://img.shields.io/github/actions/workflow/status/digitalbazaar/mldsa-multikey/main.yaml)](https://github.com/digitalbazaar/mldsa-multikey/actions/workflows/main.yaml)
-[![Coverage status](https://img.shields.io/codecov/c/github/digitalbazaar/mldsa-multikey)](https://codecov.io/gh/digitalbazaar/mldsa-multikey)
-[![NPM Version](https://img.shields.io/npm/v/@digitalbazaar/mldsa-multikey.svg)](https://npm.im/@digitalbazaar/mldsa-multikey)
-
 > Javascript library for generating and working with MldsaMultikey key pairs.
 
 ## Table of Contents
